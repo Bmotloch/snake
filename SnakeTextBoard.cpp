@@ -9,9 +9,9 @@ SnakeTextBoard::~SnakeTextBoard(){
 }
 
 void SnakeTextBoard::view()const{
-    for (wi = 0; i < count; i++)
-    {
-        /* code */
-    }
+   // for (wi = 0; i < count; i++)
+   // {
+   //     /* code */
+   // }
     
 }
