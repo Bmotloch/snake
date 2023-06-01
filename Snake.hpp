@@ -1,13 +1,13 @@
 #pragma once
+
 #ifndef SNAKEBOARD_H_
 #define SNAKEBOARD_H_
+
 #include <iostream>
 #include <vector>
 #include <string>
-#include <iostream>
 #include <limits>
 #include <cmath>
-#include <cstdlib>
 #include <ctime>
 #include <algorithm>
 
@@ -36,20 +36,16 @@ enum class TileContent
     Poison
 };
 
-/*struct Tile
-{
-
-    TileContent Content;
-};*/
 class SnakeBoard
 {
 private:
     int m_height;
     int m_width;
+    GameState m_state;
     std::vector<std::vector<TileContent>> board;
-    std::vector<int> notEmpty;
-    void fillBoard(std::vector<std::vector<TileContent>> &board, std::vector<int> &notEmpty);
-    void createSnake(std::vector<std::vector<TileContent>> &board, std::vector<int> &notEmpty);
+    std::vector<int> notEmptyTiles;
+    void fillBoard(std::vector<std::vector<TileContent>> &board, std::vector<int> &notEmptyTiles);
+    void createSnake(std::vector<std::vector<TileContent>> &board, std::vector<int> &notEmptyTiles);
 
 public:
     SnakeBoard(int height, int width);
@@ -57,6 +53,8 @@ public:
     int getBoardHeight() const;
     int getBoardWidth() const;
     TileContent getTileData(int x, int y) const;
+    GameState getGameState() const;
+    void setGameState(GameState state);
 };
 
 #endif
