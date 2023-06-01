@@ -8,17 +8,26 @@ SnakeTextBoard::~SnakeTextBoard()
 {
 }
 
-void SnakeTextBoard::view() const
+void SnakeTextBoard::display() const
 {
+   std::string upper_border;
+
+   for (int i = 0; i < textboard.getBoardWidth(); i++)
+   {
+      upper_border += "\u2550";
+   }
+   std::cout << "\u2554" << upper_border << "\u2557" << std::endl;
+
    for (int i = 0; i < textboard.getBoardHeight(); i++)
    {
+      std::cout << "\u2551";
       for (int j = 0; j < textboard.getBoardWidth(); j++)
       {
          switch (textboard.getTileData(i, j))
          {
-         
+
          case TileContent::Empty:
-            std::cout << "   ";
+            std::cout << "  ";
             break;
          case TileContent::VerticalBody:
             std::cout << "┃";
@@ -27,28 +36,28 @@ void SnakeTextBoard::view() const
             std::cout << "━";
             break;
          case TileContent::LowerRightBody:
-            std::cout << "┓";
-            break;
-         case TileContent::LowerLeftBody:
             std::cout << "┏";
             break;
-         case TileContent::UpperRightBody:
-            std::cout << "┛";
+         case TileContent::LowerLeftBody:
+            std::cout << "┓";
             break;
-         case TileContent::UpperLeftBody:
+         case TileContent::UpperRightBody:
             std::cout << "┗";
             break;
+         case TileContent::UpperLeftBody:
+            std::cout << "┛";
+            break;
          case TileContent::HeadUp:
-            std::cout << "▲";
+            std::cout << "ᐺ ";
             break; //
          case TileContent::HeadDown:
-            std::cout << "▼";
+            std::cout << "ᐽ ";
             break;
          case TileContent::HeadRight:
-            std::cout << "▶";
+            std::cout << "ᐹ ";
             break;
          case TileContent::HeadLeft:
-            std::cout << "◀";
+            std::cout << "ᐴ ";
             break;
          case TileContent::Apple:
             std::cout << "⊕";
@@ -58,7 +67,7 @@ void SnakeTextBoard::view() const
             break;
          }
       }
-      std::cout << std::endl;
+      std::cout << "\u2551" << std::endl;
    }
+   std::cout << "\u255A" << upper_border << "\u255D" << std::endl;
 }
-//"\u255A\u255D\u2557\u2554\u2550\u2551"

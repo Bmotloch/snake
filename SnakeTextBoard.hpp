@@ -11,7 +11,7 @@ private:
     const SnakeBoard &textboard;
 
 public:
-    void view() const;
+    void display() const;
     SnakeTextBoard(const SnakeBoard &board);
     ~SnakeTextBoard();
 };

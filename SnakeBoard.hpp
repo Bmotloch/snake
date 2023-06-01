@@ -3,6 +3,21 @@
 #define SNAKEBOARD_H_
 #include <iostream>
 #include <vector>
+#include <string>
+#include <iostream>
+#include <limits>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+#include <algorithm>
+
+enum class GameState
+{
+    RUNNING,
+    NOT_STARTED,
+    FINISHED_LOSS,
+    FINISHED_WIN // very unlikely
+};
 
 enum class TileContent
 {
@@ -32,6 +47,9 @@ private:
     int m_height;
     int m_width;
     std::vector<std::vector<Tile>> board;
+    std::vector<int> notEmpty;
+    void fillBoard(std::vector<std::vector<Tile>> &board, std::vector<int> &notEmpty);
+    void createSnake(std::vector<std::vector<Tile>> &board, std::vector<int> &notEmpty);
 
 public:
     SnakeBoard(int height, int width);

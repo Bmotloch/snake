@@ -23,6 +23,6 @@ int main(int argc, char *argv[])
 
     SnakeBoard board(height, width);
     SnakeTextBoard textboard(board);
-    textboard.view();
+    textboard.display();
     return 0;
 }
