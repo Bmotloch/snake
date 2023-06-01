@@ -1,4 +1,4 @@
-#include "SnakeBoard.hpp"
+#include "Snake.hpp"
 #include "SnakeTextBoard.hpp"
 
 //

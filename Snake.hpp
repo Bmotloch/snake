@@ -35,21 +35,21 @@ enum class TileContent
     Apple,
     Poison
 };
-struct Tile
+
+/*struct Tile
 {
-    int x;
-    int y;
+
     TileContent Content;
-};
+};*/
 class SnakeBoard
 {
 private:
     int m_height;
     int m_width;
-    std::vector<std::vector<Tile>> board;
+    std::vector<std::vector<TileContent>> board;
     std::vector<int> notEmpty;
-    void fillBoard(std::vector<std::vector<Tile>> &board, std::vector<int> &notEmpty);
-    void createSnake(std::vector<std::vector<Tile>> &board, std::vector<int> &notEmpty);
+    void fillBoard(std::vector<std::vector<TileContent>> &board, std::vector<int> &notEmpty);
+    void createSnake(std::vector<std::vector<TileContent>> &board, std::vector<int> &notEmpty);
 
 public:
     SnakeBoard(int height, int width);

@@ -2,7 +2,7 @@
 #ifndef SNAKETEXTBOARD_H_
 #define SNAKETEXTBOARD_H_
 
-#include "SnakeBoard.hpp"
+#include "Snake.hpp"
 
 
 class SnakeTextBoard
