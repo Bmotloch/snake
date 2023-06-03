@@ -19,6 +19,7 @@ private:
     SnakeBoard &m_board;
     double m_frameRate;
     double m_frameDuration = 1.0 / m_frameRate;
+    bool rotationPerformed{false};
     void pressStart();
     void update();
     void setTerminalMode(bool enabled);
