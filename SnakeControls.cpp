@@ -19,11 +19,11 @@ void SnakeControls::play()
 }
 
 void SnakeControls::pressStart()
-{   
+{
     m_textboard.displayWaitingScreen();
     while (m_board.getGameState() == GameState::NOT_STARTED)
-    {   
-        
+    {
+
         if (isKeyPressed())
         {
             char key;
@@ -39,34 +39,21 @@ void SnakeControls::pressStart()
 
 void SnakeControls::update()
 {
-    int counter{0};
-    while (m_board.getGameState() == GameState::RUNNING)
+    std::thread displayThread(&SnakeControls::displayFunction, this);
+    std::thread inputThread(&SnakeControls::inputFunction, this);
+    /* while (m_board.getGameState() == GameState::RUNNING)
     {
-        // Get the current time before updating the screen
-        auto startTime = std::chrono::steady_clock::now();
-
-        // Update the console screen here
-
-        system("clear");
-        m_textboard.display();
-        std::cout << "iter: " << counter << std::endl;
-        counter++;
-        // Get the current time after updating the screen
-        auto endTime = std::chrono::steady_clock::now();
-
-        // Calculate the time taken for updating the screen
-        auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-
-        // Calculate the remaining time until the next frame
-        double remainingTime = m_frameDuration * 1000 - elapsedTime;
-
-        // Check if the remaining time is positive
-        if (remainingTime > 0)
+        if (isKeyPressed())
         {
-            // Sleep for the remaining time to achieve the desired frame rate
-            std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<long long>(remainingTime)));
+            char key;
+            if (read(STDIN_FILENO, &key, 1) == 1 && key == 'q')
+            {
+                break;
+            }
         }
-    }
+        }*/
+    displayThread.join();
+    inputThread.join();
 }
 
 void SnakeControls::setTerminalMode(bool enabled)
@@ -99,4 +86,141 @@ bool SnakeControls::isKeyPressed()
     tcsetattr(STDIN_FILENO, TCSANOW, &oldSettings);
 
     return bytesWaiting > 0;
+}
+
+void SnakeControls::move()
+{
+}
+
+void SnakeControls::changeDirection()
+{
+    char key;
+    if (read(STDIN_FILENO, &key, 1) == 1)
+    {
+        if (key == 27) // Escape key
+        {
+            if (read(STDIN_FILENO, &key, 1) == 1 && key == '[')
+            {
+                if (read(STDIN_FILENO, &key, 1) == 1) // direction key D: left     C:right
+                {
+                    if (key == 'D')
+                    {
+                        switch (m_board.getSnakeDirection())
+                        {
+                        case Direction::Up:
+                        {
+                            m_board.setSnakeDirection(Direction::Left);
+                            m_board.setTileData(m_board.getBoardWidth() / 2, m_board.getBoardHeight() / 2, TileContent::HeadLeft);
+                            return;
+                        }
+                        case Direction::Down:
+                        {
+                            m_board.setSnakeDirection(Direction::Right);
+                            m_board.setTileData(m_board.getBoardWidth() / 2, m_board.getBoardHeight() / 2, TileContent::HeadRight);
+                            return;
+                        }
+                        case Direction::Left:
+                        {
+                            m_board.setSnakeDirection(Direction::Down);
+                            m_board.setTileData(m_board.getBoardWidth() / 2, m_board.getBoardHeight() / 2, TileContent::HeadDown);
+                            return;
+                        }
+                        case Direction::Right:
+                        {
+                            m_board.setSnakeDirection(Direction::Up);
+                            m_board.setTileData(m_board.getBoardWidth() / 2, m_board.getBoardHeight() / 2, TileContent::HeadUp);
+                            return;
+                        }
+                        }
+                    }
+                    if (key == 'C')
+                    {
+                        switch (m_board.getSnakeDirection())
+                        {
+                        case Direction::Up:
+                        {
+                            m_board.setSnakeDirection(Direction::Right);
+                            m_board.setTileData(m_board.getBoardWidth() / 2, m_board.getBoardHeight() / 2, TileContent::HeadRight);
+                            return;
+                        }
+                        case Direction::Down:
+                        {
+                            m_board.setSnakeDirection(Direction::Left);
+                            m_board.setTileData(m_board.getBoardWidth() / 2, m_board.getBoardHeight() / 2, TileContent::HeadLeft);
+                            return;
+                        }
+                        case Direction::Left:
+                        {
+                            m_board.setSnakeDirection(Direction::Up);
+                            m_board.setTileData(m_board.getBoardWidth() / 2, m_board.getBoardHeight() / 2, TileContent::HeadUp);
+                            return;
+                        }
+                        case Direction::Right:
+                        {
+                            m_board.setSnakeDirection(Direction::Down);
+                            m_board.setTileData(m_board.getBoardWidth() / 2, m_board.getBoardHeight() / 2, TileContent::HeadDown);
+                            return;
+                        }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void SnakeControls::updateSnakePosition()
+{
+    switch (m_board.getSnakeDirection())
+    {
+    case Direction::Up:
+        m_board.setSnakeHeadY(1);
+        break;
+    case Direction::Down:
+        m_board.setSnakeHeadY(-1);
+        break;
+    case Direction::Left:
+        m_board.setSnakeHeadX(-1);
+        break;
+    case Direction::Right:
+        m_board.setSnakeHeadX(1);
+        break;
+    }
+}
+
+void SnakeControls::displayFunction()
+{
+    int counter{0};
+    while (m_board.getGameState() == GameState::RUNNING)
+    {
+        auto startTime = std::chrono::steady_clock::now();
+        // Update the console screen here
+        system("clear");
+        m_textboard.display();
+        std::cout << "iter: " << counter << std::endl;
+        counter++;
+        // Get the current time after updating the screen
+        auto endTime = std::chrono::steady_clock::now();
+
+        // Calculate the time taken for updating the screen
+        auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+
+        // Calculate the remaining time until the next frame
+        double remainingTime = m_frameDuration * 1000 - elapsedTime;
+
+        // Check if the remaining time is positive
+        if (remainingTime > 0)
+        {
+            // Sleep for the remaining time to achieve the desired frame rate
+            std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<long long>(remainingTime)));
+        }
+    }
+}
+
+void SnakeControls::inputFunction()
+{
+    while (m_board.getGameState() == GameState::RUNNING)
+    {
+        changeDirection();
+    }
 }

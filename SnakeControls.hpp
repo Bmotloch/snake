@@ -23,6 +23,11 @@ private:
     void update();
     void setTerminalMode(bool enabled);
     bool isKeyPressed();
+    void move();
+    void changeDirection();
+    void updateSnakePosition();
+    void displayFunction();
+    void inputFunction();
 
 public:
     SnakeControls(SnakeBoard &board, const SnakeTextBoard &textboard, double frameRate);

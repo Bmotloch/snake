@@ -26,6 +26,9 @@ void SnakeBoard::createSnake(std::vector<std::vector<TileContent>> &board, std::
 {
     int center_y{getBoardHeight() / 2}; // head on center or on the closest lower right position to center
     int center_x{getBoardWidth() / 2};
+    m_snakeHeadX = center_x;
+    m_snakeHeadY = center_y;
+    m_snakeDirection = Direction::Up;
     board[center_y][center_x] = TileContent::HeadUp;
     board[center_y + 1][center_x] = TileContent::VerticalBody; // adding two body blocks
     board[center_y + 2][center_x] = TileContent::VerticalBody;
@@ -73,4 +76,39 @@ void SnakeBoard::setGameState(GameState state)
 TileContent SnakeBoard::getTileData(int x, int y) const
 {
     return board[x][y];
+}
+
+int SnakeBoard::getSnakeHeadX() const
+{
+    return m_snakeHeadX;
+}
+
+int SnakeBoard::getSnakeHeadY() const
+{
+    return m_snakeHeadY;
+}
+
+Direction SnakeBoard::getSnakeDirection() const
+{
+    return m_snakeDirection;
+}
+
+void SnakeBoard::setSnakeHeadX(int x)
+{
+    m_snakeHeadX += x;
+}
+
+void SnakeBoard::setSnakeHeadY(int y)
+{
+    m_snakeHeadY += y;
+}
+
+void SnakeBoard::setSnakeDirection(Direction direction)
+{
+    m_snakeDirection = direction;
+}
+
+void SnakeBoard::setTileData(int x, int y, TileContent data)
+{
+    board[y][x] = data;
 }

@@ -36,11 +36,21 @@ enum class TileContent
     Poison
 };
 
+enum class Direction
+{
+    Up,
+    Down,
+    Left,
+    Right
+};
 class SnakeBoard
 {
 private:
     int m_height;
     int m_width;
+    int m_snakeHeadX;
+    int m_snakeHeadY;
+    Direction m_snakeDirection;
     GameState m_state;
     std::vector<std::vector<TileContent>> board;
     std::vector<int> notEmptyTiles;
@@ -54,7 +64,15 @@ public:
     int getBoardWidth() const;
     TileContent getTileData(int x, int y) const;
     GameState getGameState() const;
+    int getSnakeHeadX() const;
+    int getSnakeHeadY() const;
+    Direction getSnakeDirection() const;
+    void setSnakeHeadX(int x);
+    void setSnakeHeadY(int y);
+    void setSnakeDirection(Direction direction);
     void setGameState(GameState state);
+    void addSnakePart(int x, int y);
+    void setTileData(int x, int y, TileContent data);
 };
 
 #endif
