@@ -30,6 +30,7 @@ void SnakeBoard::createSnake(std::list<BodyPart> &snake)
 {
     int center_y{getBoardHeight() / 2}; // head on center or on the closest lower right position to center
     int center_x{getBoardWidth() / 2};
+
     for (int i = center_y; i <= (center_y + 2); i++)
     {
         if (i == center_y)

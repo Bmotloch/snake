@@ -108,7 +108,11 @@ void SnakeControls::changeDirection()
             {
                 if (read(STDIN_FILENO, &key, 1) == 1) // direction key D: left     C:right
                 {
-                    if (key == 'D')
+                    if (rotationPerformed)
+                    {
+                        return;
+                    }
+                    else if (key == 'D')
                     {
                         switch (m_board.getSnakeDirection())
                         {
@@ -120,6 +124,7 @@ void SnakeControls::changeDirection()
                             hasRotated = true;
                             return;
                         }
+                        break;
                         case Direction::Down:
                         {
                             m_board.setSnakeDirection(Direction::Right);
@@ -128,6 +133,7 @@ void SnakeControls::changeDirection()
                             hasRotated = true;
                             return;
                         }
+                        break;
                         case Direction::Left:
                         {
                             m_board.setSnakeDirection(Direction::Down);
@@ -136,6 +142,7 @@ void SnakeControls::changeDirection()
                             hasRotated = true;
                             return;
                         }
+                        break;
                         case Direction::Right:
                         {
                             m_board.setSnakeDirection(Direction::Up);
@@ -144,9 +151,11 @@ void SnakeControls::changeDirection()
                             hasRotated = true;
                             return;
                         }
+                        break;
+                            return;
                         }
                     }
-                    if (key == 'C')
+                    else if (key == 'C')
                     {
                         switch (m_board.getSnakeDirection())
                         {
@@ -158,6 +167,7 @@ void SnakeControls::changeDirection()
                             hasRotated = true;
                             return;
                         }
+                        break;
                         case Direction::Down:
                         {
                             m_board.setSnakeDirection(Direction::Left);
@@ -166,6 +176,7 @@ void SnakeControls::changeDirection()
                             hasRotated = true;
                             return;
                         }
+                        break;
                         case Direction::Left:
                         {
                             m_board.setSnakeDirection(Direction::Up);
@@ -174,6 +185,7 @@ void SnakeControls::changeDirection()
                             hasRotated = true;
                             return;
                         }
+                        break;
                         case Direction::Right:
                         {
                             m_board.setSnakeDirection(Direction::Down);
@@ -182,7 +194,9 @@ void SnakeControls::changeDirection()
                             hasRotated = true;
                             return;
                         }
+                        break;
                         }
+                        return;
                     }
                 }
             }
@@ -226,5 +240,6 @@ void SnakeControls::inputFunction()
     while (m_board.getGameState() == GameState::RUNNING)
     {
         changeDirection();
+        move();
     }
 }
