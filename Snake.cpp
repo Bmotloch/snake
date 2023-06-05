@@ -30,11 +30,11 @@ void SnakeBoard::createSnake(std::vector<std::vector<TileContent>> &board, std::
     m_snakeHeadY = center_y;
     m_snakeDirection = Direction::Up;
     board[center_y][center_x] = TileContent::HeadUp;
-    board[center_y + 1][center_x] = TileContent::VerticalBody; // adding two body blocks
-    board[center_y + 2][center_x] = TileContent::VerticalBody;
+    board[center_y][center_x+1] = TileContent::LowerLeftBody; // adding two body blocks
+    board[center_y + 1][center_x+1] = TileContent::VerticalBody;
     notEmptyTiles.push_back(center_y * getBoardWidth() + center_x); // pushing to the vector
-    notEmptyTiles.push_back((center_y + 1) * getBoardWidth() + center_x);
-    notEmptyTiles.push_back((center_y + 2) * getBoardWidth() + center_x);
+    notEmptyTiles.push_back((center_y ) * getBoardWidth() + center_x+1);
+    notEmptyTiles.push_back((center_y + 1) * getBoardWidth() + center_x+1);
 }
 
 void SnakeBoard::fillBoard(std::vector<std::vector<TileContent>> &board, std::vector<int> &notEmptyTiles)

@@ -14,7 +14,7 @@ void SnakeTextBoard::display() const
 
    for (int i = 0; i < textboard.getBoardWidth(); i++)
    {
-      upper_border += "\u2550";
+      upper_border += "\u2550\u2550";
    }
    std::cout << "\u2554" << upper_border << "\u2557" << std::endl;
 
@@ -30,22 +30,22 @@ void SnakeTextBoard::display() const
             std::cout << "  ";
             break;
          case TileContent::VerticalBody:
-            std::cout << "┃";
+            std::cout << " ┃";
             break;
          case TileContent::HorizontalBody:
-            std::cout << "━";
+            std::cout << "━━";
             break;
          case TileContent::LowerRightBody:
-            std::cout << "┏";
+            std::cout << "┏━";
             break;
          case TileContent::LowerLeftBody:
-            std::cout << "┓";
+            std::cout << "━┓";
             break;
          case TileContent::UpperRightBody:
-            std::cout << "┗";
+            std::cout << "┗━";
             break;
          case TileContent::UpperLeftBody:
-            std::cout << "┛";
+            std::cout << "━┛";
             break;
          case TileContent::HeadUp:
             std::cout << "ᐺ ";
@@ -60,7 +60,7 @@ void SnakeTextBoard::display() const
             std::cout << "ᐴ ";
             break;
          case TileContent::Apple:
-            std::cout << "⊕";
+            std::cout << "⊕ ";
             break;
          case TileContent::Poison:
             std::cout << "\u2573";
@@ -85,7 +85,7 @@ void SnakeTextBoard::displayWaitingScreen() const
 
    for (int i = 0; i < textboard.getBoardWidth(); i++)
    {
-      upper_border += "\u2550";
+      upper_border += "\u2550\u2550";
    }
    std::cout << "\u2554" << upper_border << "\u2557" << std::endl;
 
