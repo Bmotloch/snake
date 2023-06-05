@@ -23,10 +23,10 @@ int main(int argc, char *argv[])
         return 1;
     }
     srand(time(0));
-    int height{std::stoi(argv[1])};
-    int width{std::stoi(argv[2])};
+    int width{std::stoi(argv[1])};
+    int height{std::stoi(argv[2])};
     double frameRate{std::stod(argv[3])};
-    SnakeBoard board(height, width);
+    SnakeBoard board(width, height);
     SnakeTextBoard textboard(board);
     SnakeControls game(board, textboard, frameRate);
     game.play();

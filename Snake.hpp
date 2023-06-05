@@ -10,6 +10,7 @@
 #include <cmath>
 #include <ctime>
 #include <algorithm>
+#include <list>
 
 enum class GameState
 {
@@ -43,6 +44,13 @@ enum class Direction
     Left,
     Right
 };
+
+struct BodyPart
+{
+    int x;
+    int y;
+    TileContent content;
+};
 class SnakeBoard
 {
 private:
@@ -51,28 +59,34 @@ private:
     int m_snakeHeadX;
     int m_snakeHeadY;
     Direction m_snakeDirection;
+    Direction m_snakePreviousDirection;
     GameState m_state;
-    std::vector<std::vector<TileContent>> board;
-    std::vector<int> notEmptyTiles;
-    void fillBoard(std::vector<std::vector<TileContent>> &board, std::vector<int> &notEmptyTiles);
-    void createSnake(std::vector<std::vector<TileContent>> &board, std::vector<int> &notEmptyTiles);
+    std::vector<std::vector<BodyPart>> board;
+    std::list<BodyPart> snake;
+    void fillBoard(std::vector<std::vector<BodyPart>> &board);
+    void createSnake(std::list<BodyPart> &snake);
 
 public:
-    SnakeBoard(int height, int width);
+    SnakeBoard(int width, int height);
     ~SnakeBoard();
     int getBoardHeight() const;
     int getBoardWidth() const;
     TileContent getTileData(int x, int y) const;
     GameState getGameState() const;
-    int getSnakeHeadX() const;
-    int getSnakeHeadY() const;
+    int getX(int x, int y) const;
+    int getY(int x, int y) const;
     Direction getSnakeDirection() const;
-    void setSnakeHeadX(int x);
-    void setSnakeHeadY(int y);
+    void setX(int x, int y);
+    void setY(int x, int y);
     void setSnakeDirection(Direction direction);
+    void setSnakePreviousDirection(Direction direction);
     void setGameState(GameState state);
-    void addSnakePart(int x, int y);
+    void addBodyPart();
     void setTileData(int x, int y, TileContent data);
+    int getSnakeHeadX();
+    int getSnakeHeadY();
+    TileContent getSnakeHeadContent();
+    void eraseTail();
 };
 
 #endif

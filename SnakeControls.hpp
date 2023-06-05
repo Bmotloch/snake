@@ -17,6 +17,8 @@ class SnakeControls
 private:
     const SnakeTextBoard &m_textboard;
     SnakeBoard &m_board;
+    bool hasRotated{false};
+    bool hasMoved{false};
     double m_frameRate;
     double m_frameDuration = 1.0 / m_frameRate;
     void pressStart();
