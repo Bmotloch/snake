@@ -16,6 +16,7 @@ void SnakeControls::play()
 {
     pressStart();
     update();
+    //scoreboard();
 }
 
 void SnakeControls::pressStart()
@@ -41,17 +42,9 @@ void SnakeControls::update()
 {
     std::thread displayThread(&SnakeControls::displayFunction, this);
     std::thread inputThread(&SnakeControls::inputFunction, this);
-    /* while (m_board.getGameState() == GameState::RUNNING)
+    while (m_board.getGameState() == GameState::RUNNING)
     {
-        if (isKeyPressed())
-        {
-            char key;
-            if (read(STDIN_FILENO, &key, 1) == 1 && key == 'q')
-            {
-                break;
-            }
-        }
-        }*/
+    }
     displayThread.join();
     inputThread.join();
 }
@@ -102,7 +95,13 @@ void SnakeControls::changeDirection()
     char key;
     if (read(STDIN_FILENO, &key, 1) == 1)
     {
-        if (key == 27) // Escape key
+        if (key == 'q') //exit at any time of the game
+        {
+            m_board.setGameState(GameState::FINISHED_LOSS);
+            std::cout << "Exiting...";
+            return;
+        }
+        else if (key == 27) // Escape key
         {
             if (read(STDIN_FILENO, &key, 1) == 1 && key == '[')
             {

@@ -54,10 +54,8 @@ struct BodyPart
 class SnakeBoard
 {
 private:
-    int m_height;
     int m_width;
-    int m_snakeHeadX;
-    int m_snakeHeadY;
+    int m_height;
     Direction m_snakeDirection;
     Direction m_snakePreviousDirection;
     GameState m_state;
@@ -79,13 +77,13 @@ public:
     void setX(int x, int y);
     void setY(int x, int y);
     void setSnakeDirection(Direction direction);
-    void setSnakePreviousDirection(Direction direction);
+    void setSnakePreviousDirection(Direction direction);    //for properly displaying bends in snake's body
     void setGameState(GameState state);
     void addBodyPart();
     void setTileData(int x, int y, TileContent data);
     int getSnakeHeadX();
     int getSnakeHeadY();
-    TileContent getSnakeHeadContent();
+    TileContent getSnakeHeadContent();  //for direction
     void eraseTail();
 };
 

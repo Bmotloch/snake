@@ -131,7 +131,7 @@ int SnakeBoard::getSnakeHeadY()
     return snake.front().y;
 }
 
-TileContent SnakeBoard::getSnakeHeadContent()
+TileContent SnakeBoard::getSnakeHeadContent() //useless? only current and previous direction needed
 {
     return snake.front().content;
 }
