@@ -3,53 +3,61 @@
 // compilation without cmake: g++ main.cpp
 // to run: <exec_name> <board_height> <board_width> <game_speed>
 
-SnakeBoard::SnakeBoard(int height, int width) : m_height{height}, m_width{width}
+SnakeBoard::SnakeBoard(int width, int height) : m_width{width}, m_height{height}
 {
     setGameState(GameState::NOT_STARTED);
-    board.resize(m_height, std::vector<TileContent>(m_width));
-    for (int x = 0; x < m_height; ++x)
+    setSnakeDirection(Direction::Up);
+    setSnakePreviousDirection(Direction::Up);
+    board.resize(m_height, std::vector<BodyPart>(m_width));
+    for (int y = 0; y < m_height; ++y)
     {
-        for (int y = 0; y < m_width; ++y)
+        for (int x = 0; x < m_width; ++x)
         {
-            board[x][y] = TileContent::Empty;
+            board[y][x].x = x;
+            board[y][x].y = y;
+            board[y][x].content = TileContent::Empty;
         }
     }
-    createSnake(board, notEmptyTiles);
-    fillBoard(board, notEmptyTiles);
+    createSnake(snake);
+    fillBoard(board);
 }
 
 SnakeBoard::~SnakeBoard()
 {
 }
 
-void SnakeBoard::createSnake(std::vector<std::vector<TileContent>> &board, std::vector<int> &notEmptyTiles)
+void SnakeBoard::createSnake(std::list<BodyPart> &snake)
 {
     int center_y{getBoardHeight() / 2}; // head on center or on the closest lower right position to center
     int center_x{getBoardWidth() / 2};
-    m_snakeHeadX = center_x;
-    m_snakeHeadY = center_y;
-    m_snakeDirection = Direction::Up;
-    board[center_y][center_x] = TileContent::HeadUp;
-    board[center_y][center_x+1] = TileContent::LowerLeftBody; // adding two body blocks
-    board[center_y + 1][center_x+1] = TileContent::VerticalBody;
-    notEmptyTiles.push_back(center_y * getBoardWidth() + center_x); // pushing to the vector
-    notEmptyTiles.push_back((center_y ) * getBoardWidth() + center_x+1);
-    notEmptyTiles.push_back((center_y + 1) * getBoardWidth() + center_x+1);
-}
 
-void SnakeBoard::fillBoard(std::vector<std::vector<TileContent>> &board, std::vector<int> &notEmptyTiles)
+    for (int i = center_y; i <= (center_y + 2); i++)
+    {
+        if (i == center_y)
+        {
+            setTileData(center_x, i, TileContent::HeadUp);
+            snake.push_back({center_x, i, TileContent::HeadUp}); // pushing to the list
+            continue;
+        }
+        else
+        {
+            setTileData(center_x, i, TileContent::VerticalBody);
+            snake.push_back({center_x, i, TileContent::VerticalBody}); // pushing to the list}
+        }
+    }
+}
+void SnakeBoard::fillBoard(std::vector<std::vector<BodyPart>> &board)
 {
     for (int i = 0; i < 4; i++) // Starting ammount of apples
     {
         int row = rand() % getBoardHeight();
         int col = rand() % getBoardWidth();
-        if (std::find(notEmptyTiles.begin(), notEmptyTiles.end(), row * getBoardWidth() + col) != notEmptyTiles.end())
+        if (board[row][col].content != TileContent::Empty)
         {
             i--;
             continue;
         }
-        board[row][col] = TileContent::Apple;
-        notEmptyTiles.push_back(row * getBoardWidth() + col);
+        board[row][col].content = TileContent::Apple;
     }
 }
 
@@ -75,17 +83,17 @@ void SnakeBoard::setGameState(GameState state)
 
 TileContent SnakeBoard::getTileData(int x, int y) const
 {
-    return board[x][y];
+    return board[y][x].content;
 }
 
-int SnakeBoard::getSnakeHeadX() const
+int SnakeBoard::getX(int x, int y) const
 {
-    return m_snakeHeadX;
+    return board[y][x].x;
 }
 
-int SnakeBoard::getSnakeHeadY() const
+int SnakeBoard::getY(int x, int y) const
 {
-    return m_snakeHeadY;
+    return board[y][x].y;
 }
 
 Direction SnakeBoard::getSnakeDirection() const
@@ -93,14 +101,14 @@ Direction SnakeBoard::getSnakeDirection() const
     return m_snakeDirection;
 }
 
-void SnakeBoard::setSnakeHeadX(int x)
+void SnakeBoard::setX(int x, int y)
 {
-    m_snakeHeadX += x;
+    board[y][x].x = x;
 }
 
-void SnakeBoard::setSnakeHeadY(int y)
+void SnakeBoard::setY(int x, int y)
 {
-    m_snakeHeadY += y;
+    board[y][x].y = y;
 }
 
 void SnakeBoard::setSnakeDirection(Direction direction)
@@ -108,7 +116,47 @@ void SnakeBoard::setSnakeDirection(Direction direction)
     m_snakeDirection = direction;
 }
 
-void SnakeBoard::setTileData(int x, int y, TileContent data)
+void SnakeBoard::setTileData(int x, int y, TileContent content)
 {
-    board[y][x] = data;
+    board[y][x].content = content;
 }
+
+int SnakeBoard::getSnakeHeadX()
+{
+    return snake.front().x;
+}
+
+int SnakeBoard::getSnakeHeadY()
+{
+    return snake.front().y;
+}
+
+TileContent SnakeBoard::getSnakeHeadContent()
+{
+    return snake.front().content;
+}
+
+void SnakeBoard::eraseTail()
+{
+    snake.pop_back();
+}
+
+void SnakeBoard::setSnakePreviousDirection(Direction direction)
+{
+    m_snakePreviousDirection = direction;
+}
+
+/*
+void SnakeBoard::addBodyPart(){
+   TileContent option=snake.front().content;
+   switch (opt)
+   {
+   case TileContent::HeadDown:
+break;
+
+default:
+break;
+}
+snake.insert(2, {});
+}
+*/

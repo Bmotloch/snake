@@ -23,7 +23,7 @@ void SnakeTextBoard::display() const
       std::cout << "\u2551";
       for (int j = 0; j < textboard.getBoardWidth(); j++)
       {
-         switch (textboard.getTileData(i, j))
+         switch (textboard.getTileData(j, i))
          {
 
          case TileContent::Empty:
@@ -63,7 +63,7 @@ void SnakeTextBoard::display() const
             std::cout << "⊕ ";
             break;
          case TileContent::Poison:
-            std::cout << "\u2573";
+            std::cout << "\u2573 ";
             break;
          }
       }
@@ -74,7 +74,7 @@ void SnakeTextBoard::display() const
 
 void SnakeTextBoard::displayWaitingScreen() const
 {
-   system("clear");
+   //system("clear");
    std::string upper_border;
    std::string spaces;
 
