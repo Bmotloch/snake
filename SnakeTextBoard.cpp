@@ -74,7 +74,7 @@ void SnakeTextBoard::display() const
 
 void SnakeTextBoard::displayWaitingScreen() const
 {
-   //system("clear");
+   system("clear");
    std::string upper_border;
    std::string spaces;
 
@@ -137,4 +137,3 @@ void SnakeTextBoard::displayWaitingScreen() const
    }
    std::cout << "\u255A" << upper_border << "\u255D" << std::endl;
 }
-//<<"s\n"<<"to\n"<<"start\n";

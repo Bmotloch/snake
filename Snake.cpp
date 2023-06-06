@@ -8,18 +8,18 @@ SnakeBoard::SnakeBoard(int width, int height) : m_width{width}, m_height{height}
     setGameState(GameState::NOT_STARTED);
     setSnakeDirection(Direction::Up);
     setSnakePreviousDirection(Direction::Up);
-    board.resize(m_height, std::vector<BodyPart>(m_width));
+    m_board.resize(m_height, std::vector<BodyPart>(m_width));
     for (int y = 0; y < m_height; ++y)
     {
         for (int x = 0; x < m_width; ++x)
         {
-            board[y][x].x = x;
-            board[y][x].y = y;
-            board[y][x].content = TileContent::Empty;
+            m_board[y][x].x = x;
+            m_board[y][x].y = y;
+            m_board[y][x].content = TileContent::Empty;
         }
     }
-    createSnake(snake);
-    fillBoard(board);
+    createSnake(m_snake);
+   // fillBoard(m_board);
 }
 
 SnakeBoard::~SnakeBoard()
@@ -83,17 +83,17 @@ void SnakeBoard::setGameState(GameState state)
 
 TileContent SnakeBoard::getTileData(int x, int y) const
 {
-    return board[y][x].content;
+    return m_board[y][x].content;
 }
 
 int SnakeBoard::getX(int x, int y) const
 {
-    return board[y][x].x;
+    return m_board[y][x].x;
 }
 
 int SnakeBoard::getY(int x, int y) const
 {
-    return board[y][x].y;
+    return m_board[y][x].y;
 }
 
 Direction SnakeBoard::getSnakeDirection() const
@@ -101,15 +101,7 @@ Direction SnakeBoard::getSnakeDirection() const
     return m_snakeDirection;
 }
 
-void SnakeBoard::setX(int x, int y)
-{
-    board[y][x].x = x;
-}
 
-void SnakeBoard::setY(int x, int y)
-{
-    board[y][x].y = y;
-}
 
 void SnakeBoard::setSnakeDirection(Direction direction)
 {
@@ -118,27 +110,37 @@ void SnakeBoard::setSnakeDirection(Direction direction)
 
 void SnakeBoard::setTileData(int x, int y, TileContent content)
 {
-    board[y][x].content = content;
+    m_board[y][x].content = content;
 }
 
 int SnakeBoard::getSnakeHeadX()
 {
-    return snake.front().x;
+    return m_snake.front().x;
 }
 
 int SnakeBoard::getSnakeHeadY()
 {
-    return snake.front().y;
+    return m_snake.front().y;
 }
-
-TileContent SnakeBoard::getSnakeHeadContent() //useless? only current and previous direction needed
+TileContent SnakeBoard::getHeadTileContent(Direction direction) // useless? only current and previous direction needed
 {
-    return snake.front().content;
+    switch (direction)
+    {
+    case Direction::Up:
+        return TileContent::HeadUp;
+    case Direction::Right:
+        return TileContent::HeadRight;
+    case Direction::Left:
+        return TileContent::HeadLeft;
+    case Direction::Down:
+        return TileContent::HeadDown;
+    }
+    return TileContent::Empty; //wreturn
 }
 
 void SnakeBoard::eraseTail()
 {
-    snake.pop_back();
+    m_snake.pop_back();
 }
 
 void SnakeBoard::setSnakePreviousDirection(Direction direction)
@@ -146,6 +148,35 @@ void SnakeBoard::setSnakePreviousDirection(Direction direction)
     m_snakePreviousDirection = direction;
 }
 
+std::list<BodyPart>::iterator SnakeBoard::getSnakeIter(int x, int y)
+{
+    for (std::list<BodyPart>::iterator it = m_snake.begin(); it != m_snake.end(); ++it)
+    {
+        if (it->x == x && it->y == y)
+        {
+            return it; // Return the iterator when the coordinates match
+        }
+    }
+    return m_snake.end();
+}
+
+void SnakeBoard::modifySnakePart(int oldX, int oldY, int newX, int newY)
+{
+    for (auto &part : m_snake)
+    {
+        if (part.x == oldX && part.y == oldY)
+        {
+            part.x = newX;
+            part.y = newY;
+            break;
+        }
+    }
+}
+
+std::list<BodyPart> &SnakeBoard::getSnake()
+{
+    return m_snake;
+}
 /*
 void SnakeBoard::addBodyPart(){
    TileContent option=snake.front().content;

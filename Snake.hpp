@@ -59,8 +59,8 @@ private:
     Direction m_snakeDirection;
     Direction m_snakePreviousDirection;
     GameState m_state;
-    std::vector<std::vector<BodyPart>> board;
-    std::list<BodyPart> snake;
+    std::vector<std::vector<BodyPart>> m_board;
+    std::list<BodyPart> m_snake;
     void fillBoard(std::vector<std::vector<BodyPart>> &board);
     void createSnake(std::list<BodyPart> &snake);
 
@@ -77,14 +77,16 @@ public:
     void setX(int x, int y);
     void setY(int x, int y);
     void setSnakeDirection(Direction direction);
-    void setSnakePreviousDirection(Direction direction);    //for properly displaying bends in snake's body
+    void setSnakePreviousDirection(Direction direction); // for properly displaying bends in snake's body
     void setGameState(GameState state);
     void addBodyPart();
     void setTileData(int x, int y, TileContent data);
     int getSnakeHeadX();
     int getSnakeHeadY();
-    TileContent getSnakeHeadContent();  //for direction
+    TileContent getHeadTileContent(Direction direction); // for direction
     void eraseTail();
+    std::list<BodyPart>::iterator getSnakeIter(int x, int y);
+    void modifySnakePart(int x, int y, int newX, int newY);
+    std::list<BodyPart> &getSnake();
 };
-
 #endif
