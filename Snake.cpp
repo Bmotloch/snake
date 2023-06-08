@@ -18,7 +18,7 @@ SnakeBoard::SnakeBoard(int width, int height) : m_width{width}, m_height{height}
         }
     }
     createSnake();
-    fillBoard();
+    addApple();
 }
 
 SnakeBoard::~SnakeBoard()
@@ -29,15 +29,16 @@ void SnakeBoard::createSnake()
 {
     int center_y = getBoardHeight() / 2; // head on center or on the closest lower right position to center
     int center_x = getBoardWidth() / 2;
-
     setTileData(center_x, center_y, TileContent::HeadUp);
     m_snake.push_back({center_x, center_y, TileContent::HeadUp});
 }
 
-void SnakeBoard::fillBoard()
+void SnakeBoard::addApple()
 {
-    for (int i = 0; i < 10; i++) // Starting ammount of apples
+    int i{0};
+    while (i != 1) // Starting ammount of apples
     {
+        i++;
         int row = rand() % getBoardHeight();
         int col = rand() % getBoardWidth();
         if (m_board[row][col].content != TileContent::Empty)
@@ -142,7 +143,7 @@ void SnakeBoard::eraseTail()
             }
 
             if (isSnakePart)
-            {
+            {   
                 continue;
             }
             else if (getTileData(j, i) == TileContent::Body)
@@ -201,4 +202,14 @@ void SnakeBoard::addBodyPart()
     default:
         break;
     }
+}
+
+bool SnakeBoard::checkForWin()
+{
+    if (static_cast<int>(m_snake.size()) == getBoardHeight() * getBoardWidth())
+    {
+        setGameState(GameState::FINISHED_WIN);
+        return true;
+    }
+    return false;
 }

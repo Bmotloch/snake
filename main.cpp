@@ -2,7 +2,6 @@
 #include "SnakeTextBoard.hpp"
 #include "SnakeControls.hpp"
 
-//
 int main(int argc, char *argv[])
 {
     if (argc != 4)
@@ -26,8 +25,25 @@ int main(int argc, char *argv[])
     int width{std::stoi(argv[1])};
     int height{std::stoi(argv[2])};
     double frameRate{std::stod(argv[3])};
+    system("clear");
+    bool valid = false;
+    std::string nick;
+    std::cout << "Enter your nick: ";
+    while (!valid)
+    {
+        std::cin >> nick;
+        if (nick.size() < 15 && nick.size() > 0)
+        {
+            valid = true;
+            break;
+        }
+        else
+        {
+            std::cout << "Provided Nick is too long or too short" << std::endl;
+        }
+    }
     SnakeBoard board(width, height);
-    SnakeTextBoard textboard(board);
+    SnakeTextBoard textboard(board, nick);
     SnakeControls game(board, textboard, frameRate);
     game.play();
     return 0;

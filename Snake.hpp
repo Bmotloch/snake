@@ -28,8 +28,7 @@ enum class TileContent
     HeadDown,
     HeadLeft,
     HeadRight,
-    Apple,
-    Poison
+    Apple
 };
 
 enum class Direction
@@ -56,7 +55,6 @@ private:
     GameState m_state;
     std::vector<std::vector<BodyPart>> m_board;
     std::vector<BodyPart> m_snake;
-    void fillBoard();
     void createSnake();
 
 public:
@@ -75,10 +73,12 @@ public:
     void setTileData(int x, int y, TileContent data);
     int getSnakeHeadX();
     int getSnakeHeadY();
+    void addApple();
     TileContent getHeadTileContent(Direction direction);
     void eraseTail();
     void modifySnakePart(int x, int y, int newX, int newY);
     std::vector<BodyPart> &getSnake();
     void updateSnakeBody();
+    bool checkForWin();
 };
 #endif

@@ -1,0 +1,10 @@
+sss,280
+www,176
+sss,169
+sss,37
+ss,31
+ss,27
+ss,-2
+sss,-3
+ssss,-3
+s,-3

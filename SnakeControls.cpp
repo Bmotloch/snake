@@ -13,10 +13,22 @@ SnakeControls::~SnakeControls()
 }
 
 void SnakeControls::play()
-{
+{   
     pressStart();
     update();
-    // scoreboard();
+    setTerminalMode(false);
+    resetTerminalMode();
+    scoreboard();
+}
+
+void SnakeControls::resetTerminalMode()
+{
+
+    struct termios t;
+    tcgetattr(STDIN_FILENO, &t);
+    t.c_lflag |= (ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &t);
+    fflush(STDIN_FILENO);
 }
 
 void SnakeControls::pressStart()
@@ -44,9 +56,6 @@ void SnakeControls::update()
     std::thread displayThread(&SnakeControls::displayFunction, this);
     std::thread inputThread(&SnakeControls::inputFunction, this);
     std::thread moveThread(&SnakeControls::moveFunction, this);
-    while (m_board.getGameState() == GameState::RUNNING)
-    {
-    }
     displayThread.join();
     inputThread.join();
     moveThread.join();
@@ -65,6 +74,7 @@ void SnakeControls::setTerminalMode(bool enabled)
         t.c_lflag |= (ICANON | ECHO);
     }
     tcsetattr(STDIN_FILENO, TCSANOW, &t);
+
 }
 
 // Function to check if a key is pressed
@@ -104,9 +114,9 @@ void SnakeControls::move()
         }
         if (m_board.getTileData(m_board.getX(oldHeadX, oldHeadY - 1), m_board.getY(oldHeadX, oldHeadY - 1)) == TileContent::Empty)
         {
-            m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX, oldHeadY - 1);
-            m_board.setTileData(oldHeadX, oldHeadY - 1, m_board.getHeadTileContent(Direction::Up));
-            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
+            m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX, oldHeadY - 1);                    // head pos update
+            m_board.setTileData(oldHeadX, oldHeadY - 1, m_board.getHeadTileContent(Direction::Up)); // proper head display
+            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);                             // old head pos is now body
             m_board.updateSnakeBody();
             m_board.eraseTail();
             hasMoved = true;
@@ -120,6 +130,11 @@ void SnakeControls::move()
             m_board.addBodyPart();
             m_board.updateSnakeBody();
             m_board.eraseTail();
+            score += 20 * m_frameRate;
+            if (!m_board.checkForWin())
+            {
+                m_board.addApple();
+            }
             hasMoved = true;
             return;
         }
@@ -154,6 +169,11 @@ void SnakeControls::move()
             m_board.addBodyPart();
             m_board.updateSnakeBody();
             m_board.eraseTail();
+            score += 20 * m_frameRate;
+            if (!m_board.checkForWin())
+            {
+                m_board.addApple();
+            }
             hasMoved = true;
             return;
         }
@@ -188,6 +208,11 @@ void SnakeControls::move()
             m_board.addBodyPart();
             m_board.updateSnakeBody();
             m_board.eraseTail();
+            score += 20 * m_frameRate;
+            if (!m_board.checkForWin())
+            {
+                m_board.addApple();
+            }
             hasMoved = true;
             return;
         }
@@ -222,6 +247,11 @@ void SnakeControls::move()
             m_board.addBodyPart();
             m_board.updateSnakeBody();
             m_board.eraseTail();
+            score += 20 * m_frameRate;
+            if (!m_board.checkForWin())
+            {
+                m_board.addApple();
+            }
             hasMoved = true;
             return;
         }
@@ -339,7 +369,6 @@ void SnakeControls::changeDirection()
 
 void SnakeControls::displayFunction()
 {
-    int counter{0};
     while (m_board.getGameState() == GameState::RUNNING)
     {
         auto startTime = std::chrono::steady_clock::now();
@@ -348,8 +377,8 @@ void SnakeControls::displayFunction()
         hasMoved = false;
         m_textboard.display();
 
-        std::cout << "score: " << counter << std::endl;
-        counter++;
+        std::cout << "score: " << score << std::endl;
+        score--; // every move costs 1 point
         // Get the current time after updating the screen
         auto endTime = std::chrono::steady_clock::now();
 
@@ -382,4 +411,9 @@ void SnakeControls::moveFunction()
     {
         move();
     }
+}
+
+void SnakeControls::scoreboard()
+{
+    m_textboard.displayScoreboard(score);
 }
