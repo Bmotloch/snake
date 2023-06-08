@@ -12,7 +12,7 @@ To build the Snake game, follow these steps:
 
 To run the Snake game, use the following command:
 
-./Snake <width> <height> <game_speed>
+./Snake < width > < height > < game_speed >
   
 - The minimum size of the board is 5x5.
 - The maximum size of the board is 25x50.
