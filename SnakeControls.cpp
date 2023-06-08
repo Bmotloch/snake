@@ -1,42 +1,30 @@
 #include "SnakeControls.hpp"
 
-SnakeControls::SnakeControls(SnakeBoard &board, const SnakeTextBoard &textboard, double framerate) : m_textboard{textboard}, m_board{board}, m_frameRate{framerate}
+SnakeControls::SnakeControls(SnakeBoard &board, const SnakeTextBoard &textboard, double framerate)
+    : m_textboard{textboard}, m_board{board}, m_frameRate{framerate}
 {
     setTerminalMode(true);
-    int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
-    fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK);
+    setNonBlockingInput(true);
 }
 
 SnakeControls::~SnakeControls()
 {
     setTerminalMode(false);
+    setNonBlockingInput(false);
 }
 
 void SnakeControls::play()
-{   
+{
     pressStart();
     update();
-    setTerminalMode(false);
-    resetTerminalMode();
     scoreboard();
 }
 
-void SnakeControls::resetTerminalMode()
-{
-
-    struct termios t;
-    tcgetattr(STDIN_FILENO, &t);
-    t.c_lflag |= (ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &t);
-    fflush(STDIN_FILENO);
-}
-
-void SnakeControls::pressStart()
+void SnakeControls::pressStart() const
 {
     m_textboard.displayWaitingScreen();
     while (m_board.getGameState() == GameState::NOT_STARTED)
     {
-
         if (isKeyPressed())
         {
             char key;
@@ -52,7 +40,6 @@ void SnakeControls::pressStart()
 
 void SnakeControls::update()
 {
-
     std::thread displayThread(&SnakeControls::displayFunction, this);
     std::thread inputThread(&SnakeControls::inputFunction, this);
     std::thread moveThread(&SnakeControls::moveFunction, this);
@@ -61,7 +48,7 @@ void SnakeControls::update()
     moveThread.join();
 }
 
-void SnakeControls::setTerminalMode(bool enabled)
+void SnakeControls::setTerminalMode(bool enabled) const
 {
     struct termios t;
     tcgetattr(STDIN_FILENO, &t);
@@ -74,11 +61,22 @@ void SnakeControls::setTerminalMode(bool enabled)
         t.c_lflag |= (ICANON | ECHO);
     }
     tcsetattr(STDIN_FILENO, TCSANOW, &t);
-
 }
 
-// Function to check if a key is pressed
-bool SnakeControls::isKeyPressed()
+void SnakeControls::setNonBlockingInput(bool enabled) const
+{
+    int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
+    if (enabled)
+    {
+        fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK);
+    }
+    else
+    {
+        fcntl(STDIN_FILENO, F_SETFL, flags & ~O_NONBLOCK);
+    }
+}
+
+bool SnakeControls::isKeyPressed() const
 {
     struct termios oldSettings, newSettings;
     tcgetattr(STDIN_FILENO, &oldSettings);
@@ -100,168 +98,66 @@ void SnakeControls::move()
     {
         return;
     }
-    int oldHeadX{m_board.getSnakeHeadX()};
-    int oldHeadY{m_board.getSnakeHeadY()};
+
+    int oldHeadX = m_board.getSnakeHeadX();
+    int oldHeadY = m_board.getSnakeHeadY();
     Direction option = m_board.getSnakeDirection();
+
+    int newHeadX = oldHeadX;
+    int newHeadY = oldHeadY;
+
     switch (option)
     {
     case Direction::Up:
-    {
-        if (oldHeadY - 1 < 0)
-        {
-            m_board.setGameState(GameState::FINISHED_LOSS); // hit the wall
-            return;
-        }
-        if (m_board.getTileData(m_board.getX(oldHeadX, oldHeadY - 1), m_board.getY(oldHeadX, oldHeadY - 1)) == TileContent::Empty)
-        {
-            m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX, oldHeadY - 1);                    // head pos update
-            m_board.setTileData(oldHeadX, oldHeadY - 1, m_board.getHeadTileContent(Direction::Up)); // proper head display
-            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);                             // old head pos is now body
-            m_board.updateSnakeBody();
-            m_board.eraseTail();
-            hasMoved = true;
-            return;
-        }
-        else if (m_board.getTileData(m_board.getX(oldHeadX, oldHeadY - 1), m_board.getY(oldHeadX, oldHeadY - 1)) == TileContent::Apple)
-        {
-            m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX, oldHeadY - 1);
-            m_board.setTileData(oldHeadX, oldHeadY - 1, m_board.getHeadTileContent(Direction::Up));
-            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
-            m_board.addBodyPart();
-            m_board.updateSnakeBody();
-            m_board.eraseTail();
-            score += 20 * m_frameRate;
-            if (!m_board.checkForWin())
-            {
-                m_board.addApple();
-            }
-            hasMoved = true;
-            return;
-        }
-        else
-        {
-            m_board.setGameState(GameState::FINISHED_LOSS);
-            return;
-        }
-    }
+        newHeadY--;
+        break;
     case Direction::Down:
-    {
-        if (oldHeadY + 1 >= m_board.getBoardHeight())
-        {
-            m_board.setGameState(GameState::FINISHED_LOSS); // hit the wall
-            return;
-        }
-        if (m_board.getTileData(m_board.getX(oldHeadX, oldHeadY + 1), m_board.getY(oldHeadX, oldHeadY + 1)) == TileContent::Empty)
-        {
-            m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX, oldHeadY + 1);
-            m_board.setTileData(oldHeadX, oldHeadY + 1, m_board.getHeadTileContent(Direction::Down));
-            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
-            m_board.updateSnakeBody();
-            m_board.eraseTail();
-            hasMoved = true;
-            return;
-        }
-        else if (m_board.getTileData(m_board.getX(oldHeadX, oldHeadY + 1), m_board.getY(oldHeadX, oldHeadY + 1)) == TileContent::Apple)
-        {
-            m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX, oldHeadY + 1);
-            m_board.setTileData(oldHeadX, oldHeadY + 1, m_board.getHeadTileContent(Direction::Down));
-            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
-            m_board.addBodyPart();
-            m_board.updateSnakeBody();
-            m_board.eraseTail();
-            score += 20 * m_frameRate;
-            if (!m_board.checkForWin())
-            {
-                m_board.addApple();
-            }
-            hasMoved = true;
-            return;
-        }
-        else
-        {
-            m_board.setGameState(GameState::FINISHED_LOSS);
-            return;
-        }
-    }
+        newHeadY++;
+        break;
     case Direction::Left:
-    {
-        if (oldHeadX - 1 < 0)
-        {
-            m_board.setGameState(GameState::FINISHED_LOSS); // hit the wall
-            return;
-        }
-        if (m_board.getTileData(m_board.getX(oldHeadX - 1, oldHeadY), m_board.getY(oldHeadX - 1, oldHeadY)) == TileContent::Empty)
-        {
-            m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX - 1, oldHeadY);
-            m_board.setTileData(oldHeadX - 1, oldHeadY, m_board.getHeadTileContent(Direction::Left));
-            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
-            m_board.updateSnakeBody();
-            m_board.eraseTail();
-            hasMoved = true;
-            return;
-        }
-        else if (m_board.getTileData(m_board.getX(oldHeadX - 1, oldHeadY), m_board.getY(oldHeadX - 1, oldHeadY)) == TileContent::Apple)
-        {
-            m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX - 1, oldHeadY);
-            m_board.setTileData(oldHeadX - 1, oldHeadY, m_board.getHeadTileContent(Direction::Left));
-            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
-            m_board.addBodyPart();
-            m_board.updateSnakeBody();
-            m_board.eraseTail();
-            score += 20 * m_frameRate;
-            if (!m_board.checkForWin())
-            {
-                m_board.addApple();
-            }
-            hasMoved = true;
-            return;
-        }
-        else
-        {
-            m_board.setGameState(GameState::FINISHED_LOSS);
-            return;
-        }
-    }
+        newHeadX--;
+        break;
     case Direction::Right:
+        newHeadX++;
+        break;
+    }
+
+    if (newHeadX < 0 || newHeadX >= m_board.getBoardWidth() || newHeadY < 0 || newHeadY >= m_board.getBoardHeight())
     {
-        if (oldHeadX + 1 >= m_board.getBoardWidth())
+        m_board.setGameState(GameState::FINISHED_LOSS); // Hit the wall
+        return;
+    }
+
+    TileContent tileContent = m_board.getTileData(newHeadX, newHeadY);
+
+    if (tileContent == TileContent::Empty)
+    {
+        m_board.modifySnakePart(oldHeadX, oldHeadY, newHeadX, newHeadY);
+        m_board.setTileData(newHeadX, newHeadY, m_board.getHeadTileContent(option));
+        m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
+        m_board.updateSnakeBody();
+        m_board.eraseTail();
+    }
+    else if (tileContent == TileContent::Apple)
+    {
+        m_board.modifySnakePart(oldHeadX, oldHeadY, newHeadX, newHeadY);
+        m_board.setTileData(newHeadX, newHeadY, m_board.getHeadTileContent(option));
+        m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
+        m_board.addBodyPart();
+        m_board.updateSnakeBody();
+        m_board.eraseTail();
+        score += 20 * m_frameRate;
+        if (!m_board.checkForWin())
         {
-            m_board.setGameState(GameState::FINISHED_LOSS); // hit the wall
-            return;
-        }
-        if (m_board.getTileData(m_board.getX(oldHeadX + 1, oldHeadY), m_board.getY(oldHeadX + 1, oldHeadY)) == TileContent::Empty)
-        {
-            m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX + 1, oldHeadY);
-            m_board.setTileData(oldHeadX + 1, oldHeadY, m_board.getHeadTileContent(Direction::Right));
-            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
-            m_board.updateSnakeBody();
-            m_board.eraseTail();
-            hasMoved = true;
-            return;
-        }
-        else if (m_board.getTileData(m_board.getX(oldHeadX + 1, oldHeadY), m_board.getY(oldHeadX + 1, oldHeadY)) == TileContent::Apple)
-        {
-            m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX + 1, oldHeadY);
-            m_board.setTileData(oldHeadX + 1, oldHeadY, m_board.getHeadTileContent(Direction::Right));
-            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
-            m_board.addBodyPart();
-            m_board.updateSnakeBody();
-            m_board.eraseTail();
-            score += 20 * m_frameRate;
-            if (!m_board.checkForWin())
-            {
-                m_board.addApple();
-            }
-            hasMoved = true;
-            return;
-        }
-        else
-        {
-            m_board.setGameState(GameState::FINISHED_LOSS);
-            return;
+            m_board.addApple();
         }
     }
+    else
+    {
+        m_board.setGameState(GameState::FINISHED_LOSS);
     }
+
+    hasMoved = true;
 }
 
 void SnakeControls::changeDirection()
@@ -277,7 +173,7 @@ void SnakeControls::changeDirection()
         if (key == 'q') // exit at any time of the game
         {
             m_board.setGameState(GameState::FINISHED_LOSS);
-            std::cout << "Exiting...";
+            std::cout << "Exiting..." << std::endl;
             return;
         }
         else if (key == 27) // Escape key
@@ -369,29 +265,28 @@ void SnakeControls::changeDirection()
 
 void SnakeControls::displayFunction()
 {
+    std::string upper_border;
+    std::string text_score{"score: "};
+    for (int i = 0; i < m_board.getBoardWidth(); i++)
+    {
+        upper_border += "\u2550\u2550";
+    }
+
     while (m_board.getGameState() == GameState::RUNNING)
     {
         auto startTime = std::chrono::steady_clock::now();
-        // Update the console screen here
         hasRotated = false;
         hasMoved = false;
+        score--;
         m_textboard.display();
-
-        std::cout << "score: " << score << std::endl;
-        score--; // every move costs 1 point
-        // Get the current time after updating the screen
+        std::string padded_score = padScoreWithSpaces(text_score + std::to_string(score), m_board.getBoardWidth() * 2);
+        std::cout << "\u2551" << padded_score << "\u2551" << std::endl;
+        std::cout << "\u255A" << upper_border << "\u255D" << std::endl;
         auto endTime = std::chrono::steady_clock::now();
-
-        // Calculate the time taken for updating the screen
         auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-
-        // Calculate the remaining time until the next frame
         double remainingTime = m_frameDuration * 1000 - elapsedTime;
-
-        // Check if the remaining time is positive
         if (remainingTime > 0)
         {
-            // Sleep for the remaining time to achieve the desired frame rate
             std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<long long>(remainingTime)));
         }
     }
@@ -413,7 +308,21 @@ void SnakeControls::moveFunction()
     }
 }
 
-void SnakeControls::scoreboard()
+void SnakeControls::scoreboard() const
 {
     m_textboard.displayScoreboard(score);
+}
+
+std::string SnakeControls::padScoreWithSpaces(std::string score, int desiredLength) const
+{
+    std::string paddedString = score;
+    int currentLength = paddedString.length();
+
+    if (currentLength <= desiredLength)
+    {
+        int spacesToAdd = desiredLength - currentLength;
+        paddedString.append(spacesToAdd, ' ');
+    }
+
+    return paddedString;
 }

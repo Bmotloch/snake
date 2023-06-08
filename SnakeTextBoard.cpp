@@ -1,6 +1,7 @@
 #include "SnakeTextBoard.hpp"
 
-SnakeTextBoard::SnakeTextBoard(const SnakeBoard &board, std::string nick) : textboard{board}, nick{nick}
+SnakeTextBoard::SnakeTextBoard(const SnakeBoard &board, std::string nick)
+    : textboard{board}, nick{nick}
 {
 }
 
@@ -26,7 +27,6 @@ void SnakeTextBoard::display() const
       {
          switch (textboard.getTileData(j, i))
          {
-
          case TileContent::Empty:
             std::cout << "  ";
             break;
@@ -35,7 +35,7 @@ void SnakeTextBoard::display() const
             break;
          case TileContent::HeadUp:
             std::cout << "ᐺ ";
-            break; //
+            break;
          case TileContent::HeadDown:
             std::cout << "ᐽ ";
             break;
@@ -52,7 +52,7 @@ void SnakeTextBoard::display() const
       }
       std::cout << "\u2551" << std::endl;
    }
-   std::cout << "\u255A" << upper_border << "\u255D" << std::endl;
+   std::cout << "\u2560" << upper_border << "\u2563" << std::endl;
 }
 
 void SnakeTextBoard::displayWaitingScreen() const
@@ -193,14 +193,12 @@ void SnakeTextBoard::displayScoreboard(int newScore) const
    std::cout << "\u2554" << upper_border << "\u2557" << std::endl;
    std::cout << "\u2551" << spaces << "HALL OF FAME" << spaces << "\u2551" << std::endl;
    std::cout << "\u2560" << upper_border << "\u2563" << std::endl;
-   // 40 spaces
    int position = 1;
-   for (ScoreEntry &entry : scoreboard)
+   for (const ScoreEntry &entry : scoreboard)
    {
       std::string not_padded_string = std::to_string(position) + ". " + entry.nick + " - " + std::to_string(entry.score);
       std::string padded_string = padStringWithSpaces(not_padded_string, 40);
-      std::cout << "\u2551"
-                << padded_string << "\u2551" << std::endl;
+      std::cout << "\u2551" << padded_string << "\u2551" << std::endl;
       if (position == 10)
       {
          break;

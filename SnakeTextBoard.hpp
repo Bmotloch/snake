@@ -14,7 +14,7 @@ class SnakeTextBoard
 {
 private:
     const SnakeBoard &textboard;
-    std::string nick;
+    const std::string nick;
     std::string padStringWithSpaces(std::string str, int desiredLength) const;
 
 public:

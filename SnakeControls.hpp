@@ -21,19 +21,20 @@ private:
     SnakeBoard &m_board;
     bool hasRotated{false};
     bool hasMoved{false};
-    double m_frameRate;
-    double m_frameDuration = 1.0 / m_frameRate;
-    void pressStart();
+    const double m_frameRate;
+    const double m_frameDuration = 1.0 / m_frameRate;
+    void pressStart() const;
     void update();
-    void resetTerminalMode();
-    void setTerminalMode(bool enabled);
-    bool isKeyPressed();
+    void setTerminalMode(bool enabled) const;
+    void setNonBlockingInput(bool enbled)const;
+    bool isKeyPressed() const;
     void move();
     void changeDirection();
     void displayFunction();
     void inputFunction();
     void moveFunction();
-    void scoreboard();
+    void scoreboard() const;
+    std::string padScoreWithSpaces(std::string score, int desiredLength) const;
 
 public:
     SnakeControls(SnakeBoard &board, const SnakeTextBoard &textboard, double frameRate);

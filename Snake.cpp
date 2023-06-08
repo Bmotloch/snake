@@ -100,17 +100,17 @@ void SnakeBoard::setTileData(int x, int y, TileContent content)
     m_board[y][x].content = content;
 }
 
-int SnakeBoard::getSnakeHeadX()
+int SnakeBoard::getSnakeHeadX() const
 {
     return m_snake.front().x;
 }
 
-int SnakeBoard::getSnakeHeadY()
+int SnakeBoard::getSnakeHeadY() const
 {
     return m_snake.front().y;
 }
 
-TileContent SnakeBoard::getHeadTileContent(Direction direction)
+TileContent SnakeBoard::getHeadTileContent(Direction direction) const
 {
     switch (direction)
     {
@@ -143,7 +143,7 @@ void SnakeBoard::eraseTail()
             }
 
             if (isSnakePart)
-            {   
+            {
                 continue;
             }
             else if (getTileData(j, i) == TileContent::Body)
