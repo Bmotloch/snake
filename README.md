@@ -1,4 +1,6 @@
 # Snake
+ 
+Created by Bartłomiej Motłoch
 
 ## Build Instructions
 
