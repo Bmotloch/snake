@@ -106,7 +106,20 @@ void SnakeControls::move()
         {
             m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX, oldHeadY - 1);
             m_board.setTileData(oldHeadX, oldHeadY - 1, m_board.getHeadTileContent(Direction::Up));
-            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Empty);
+            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
+            m_board.updateSnakeBody();
+            m_board.eraseTail();
+            hasMoved = true;
+            return;
+        }
+        else if (m_board.getTileData(m_board.getX(oldHeadX, oldHeadY - 1), m_board.getY(oldHeadX, oldHeadY - 1)) == TileContent::Apple)
+        {
+            m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX, oldHeadY - 1);
+            m_board.setTileData(oldHeadX, oldHeadY - 1, m_board.getHeadTileContent(Direction::Up));
+            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
+            m_board.addBodyPart();
+            m_board.updateSnakeBody();
+            m_board.eraseTail();
             hasMoved = true;
             return;
         }
@@ -127,7 +140,20 @@ void SnakeControls::move()
         {
             m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX, oldHeadY + 1);
             m_board.setTileData(oldHeadX, oldHeadY + 1, m_board.getHeadTileContent(Direction::Down));
-            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Empty);
+            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
+            m_board.updateSnakeBody();
+            m_board.eraseTail();
+            hasMoved = true;
+            return;
+        }
+        else if (m_board.getTileData(m_board.getX(oldHeadX, oldHeadY + 1), m_board.getY(oldHeadX, oldHeadY + 1)) == TileContent::Apple)
+        {
+            m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX, oldHeadY + 1);
+            m_board.setTileData(oldHeadX, oldHeadY + 1, m_board.getHeadTileContent(Direction::Down));
+            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
+            m_board.addBodyPart();
+            m_board.updateSnakeBody();
+            m_board.eraseTail();
             hasMoved = true;
             return;
         }
@@ -148,7 +174,20 @@ void SnakeControls::move()
         {
             m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX - 1, oldHeadY);
             m_board.setTileData(oldHeadX - 1, oldHeadY, m_board.getHeadTileContent(Direction::Left));
-            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Empty);
+            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
+            m_board.updateSnakeBody();
+            m_board.eraseTail();
+            hasMoved = true;
+            return;
+        }
+        else if (m_board.getTileData(m_board.getX(oldHeadX - 1, oldHeadY), m_board.getY(oldHeadX - 1, oldHeadY)) == TileContent::Apple)
+        {
+            m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX - 1, oldHeadY);
+            m_board.setTileData(oldHeadX - 1, oldHeadY, m_board.getHeadTileContent(Direction::Left));
+            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
+            m_board.addBodyPart();
+            m_board.updateSnakeBody();
+            m_board.eraseTail();
             hasMoved = true;
             return;
         }
@@ -169,7 +208,20 @@ void SnakeControls::move()
         {
             m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX + 1, oldHeadY);
             m_board.setTileData(oldHeadX + 1, oldHeadY, m_board.getHeadTileContent(Direction::Right));
-            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Empty);
+            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
+            m_board.updateSnakeBody();
+            m_board.eraseTail();
+            hasMoved = true;
+            return;
+        }
+        else if (m_board.getTileData(m_board.getX(oldHeadX + 1, oldHeadY), m_board.getY(oldHeadX + 1, oldHeadY)) == TileContent::Apple)
+        {
+            m_board.modifySnakePart(oldHeadX, oldHeadY, oldHeadX + 1, oldHeadY);
+            m_board.setTileData(oldHeadX + 1, oldHeadY, m_board.getHeadTileContent(Direction::Right));
+            m_board.setTileData(oldHeadX, oldHeadY, TileContent::Body);
+            m_board.addBodyPart();
+            m_board.updateSnakeBody();
+            m_board.eraseTail();
             hasMoved = true;
             return;
         }
@@ -210,19 +262,15 @@ void SnakeControls::changeDirection()
                         {
                         case Direction::Up:
                             m_board.setSnakeDirection(Direction::Left);
-                            m_board.setSnakePreviousDirection(Direction::Up);
                             break;
                         case Direction::Down:
                             m_board.setSnakeDirection(Direction::Right);
-                            m_board.setSnakePreviousDirection(Direction::Down);
                             break;
                         case Direction::Left:
                             m_board.setSnakeDirection(Direction::Down);
-                            m_board.setSnakePreviousDirection(Direction::Left);
                             break;
                         case Direction::Right:
                             m_board.setSnakeDirection(Direction::Up);
-                            m_board.setSnakePreviousDirection(Direction::Right);
                             break;
                         }
 
@@ -239,19 +287,40 @@ void SnakeControls::changeDirection()
                         {
                         case Direction::Up:
                             m_board.setSnakeDirection(Direction::Right);
-                            m_board.setSnakePreviousDirection(Direction::Up);
                             break;
                         case Direction::Down:
                             m_board.setSnakeDirection(Direction::Left);
-                            m_board.setSnakePreviousDirection(Direction::Down);
                             break;
                         case Direction::Left:
                             m_board.setSnakeDirection(Direction::Up);
-                            m_board.setSnakePreviousDirection(Direction::Left);
                             break;
                         case Direction::Right:
                             m_board.setSnakeDirection(Direction::Down);
-                            m_board.setSnakePreviousDirection(Direction::Right);
+                            break;
+                        }
+
+                        int headX = m_board.getSnake().front().x;
+                        int headY = m_board.getSnake().front().y;
+
+                        m_board.setTileData(headX, headY, m_board.getHeadTileContent(m_board.getSnakeDirection()));
+                        hasRotated = true;
+                        return;
+                    }
+                    else
+                    {
+                        switch (m_board.getSnakeDirection())
+                        {
+                        case Direction::Up:
+                            m_board.setSnakeDirection(Direction::Up);
+                            break;
+                        case Direction::Down:
+                            m_board.setSnakeDirection(Direction::Down);
+                            break;
+                        case Direction::Left:
+                            m_board.setSnakeDirection(Direction::Left);
+                            break;
+                        case Direction::Right:
+                            m_board.setSnakeDirection(Direction::Right);
                             break;
                         }
 
@@ -275,10 +344,10 @@ void SnakeControls::displayFunction()
     {
         auto startTime = std::chrono::steady_clock::now();
         // Update the console screen here
-        system("clear");
-        m_textboard.display();
         hasRotated = false;
         hasMoved = false;
+        m_textboard.display();
+
         std::cout << "score: " << counter << std::endl;
         counter++;
         // Get the current time after updating the screen
@@ -312,35 +381,5 @@ void SnakeControls::moveFunction()
     while (m_board.getGameState() == GameState::RUNNING)
     {
         move();
-        /*
-        std::list<BodyPart> &snake = m_board.getSnake();
-        std::list<BodyPart>::iterator it = snake.begin();
-        int index = 0;
-        while (it != snake.end())
-        {
-            if (index == 0) // Skip the head as it was already moved in the `move()` function
-            {
-                ++it;
-                ++index;
-                continue;
-            }
-
-            std::list<BodyPart>::iterator prevIt = it;
-            std::advance(prevIt, -1); // Move the iterator to the previous element
-
-            int oldX = it->x;
-            int oldY = it->y;
-
-            int newX = prevIt->x;
-            int newY = prevIt->y;
-
-            m_board.modifySnakePart(oldX, oldY, newX, newY);
-
-            it->x = newX;
-            it->y = newY;
-
-            ++it;
-            ++index;
-        }*/
     }
 }

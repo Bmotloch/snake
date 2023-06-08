@@ -9,7 +9,8 @@ SnakeTextBoard::~SnakeTextBoard()
 }
 
 void SnakeTextBoard::display() const
-{
+{  
+   system("clear");
    std::string upper_border;
 
    for (int i = 0; i < textboard.getBoardWidth(); i++)
@@ -29,23 +30,8 @@ void SnakeTextBoard::display() const
          case TileContent::Empty:
             std::cout << "  ";
             break;
-         case TileContent::VerticalBody:
-            std::cout << " ┃";
-            break;
-         case TileContent::HorizontalBody:
-            std::cout << "━━";
-            break;
-         case TileContent::LowerRightBody:
-            std::cout << "┏━";
-            break;
-         case TileContent::LowerLeftBody:
-            std::cout << "━┓";
-            break;
-         case TileContent::UpperRightBody:
-            std::cout << "┗━";
-            break;
-         case TileContent::UpperLeftBody:
-            std::cout << "━┛";
+         case TileContent::Body:
+            std::cout << "\u25CB ";
             break;
          case TileContent::HeadUp:
             std::cout << "ᐺ ";
